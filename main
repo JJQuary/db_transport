@@ -1,0 +1,445 @@
+CREATE TYPE "role" AS ENUM ('DSP', 'DRV', 'BSS');
+CREATE TYPE "status" AS ENUM ('A', 'D');
+CREATE TYPE "status_order" AS ENUM ('N', 'A', 'P', 'D', 'C');
+CREATE TYPE "sex" AS ENUM ('M','F','N');
+
+CREATE TABLE client
+(
+    client_id  SERIAL       NOT NULL PRIMARY KEY,
+    lastname   varchar(100) NOT NULL,
+    firstname  varchar(100) NOT NULL,
+    middlename varchar(100),
+    phone      char(14) CHECK (phone ~ '^\([0-9]{3}\) [0-9]{3}-[0-9]{4}$')
+);
+
+INSERT INTO client (lastname, firstname, middlename, phone)
+VALUES ('Smith', 'John', 'Michael', '(123) 456-7890'),
+       ('Johnson', 'Emily', '', '(111) 222-3333'),
+       ('Williams', 'David', 'Robert', '(555) 123-4567'),
+       ('Brown', 'Emma', 'Elizabeth', '(999) 888-7777'),
+       ('Jones', 'Oliver', '', '(777) 666-5555'),
+       ('Taylor', 'Sophia', 'Grace', '(444) 555-6666'),
+       ('Miller', 'Ava', '', '(222) 333-4444'),
+       ('Anderson', 'Liam', 'Daniel', '(111) 222-3333'),
+       ('Thomas', 'Mia', 'Emily', '(555) 444-3333'),
+       ('Jackson', 'Noah', '', '(999) 888-7777'),
+       ('White', 'Charlotte', 'Sophia', '(777) 666-5555'),
+       ('Harris', 'James', '', '(444) 555-6666'),
+       ('Martin', 'Isabella', '', '(222) 333-4444'),
+       ('Clark', 'Elijah', 'Matthew', '(111) 222-3333'),
+       ('Walker', 'Abigail', 'Elizabeth', '(555) 444-3333'),
+       ('Hall', 'Benjamin', '', '(999) 888-7777'),
+       ('Adams', 'Amelia', 'Evelyn', '(777) 666-5555'),
+       ('Cook', 'Lucas', '', '(444) 555-6666'),
+       ('Bell', 'Harper', 'Sophia', '(222) 333-4444'),
+       ('Murphy', 'Henry', 'Jacob', '(111) 222-3333');
+
+
+CREATE TABLE "user"
+(
+    user_id      SERIAL       NOT NULL PRIMARY KEY,
+    lastname     varchar(100) NOT NULL,
+    firstname    varchar(100) NOT NULL,
+    middlename   varchar(100),
+    phone        char(14)     NOT NULL CHECK (phone ~ '^\([0-9]{3}\) [0-9]{3}-[0-9]{4}$'),
+    addr_home    varchar(200) NOT NULL,
+    zip          char(5)      NOT NULL CHECK (zip ~ '^[0-9]{5}$|^[0-9]{5}-[0-9]{4}$'),
+    pickup       varchar(200),
+    sex          sex          NOT NULL,
+    birtday      date         NOT NULL CHECK (birtday <= CURRENT_DATE - INTERVAL '18 years'),
+    "role"       role         NOT NULL,
+    password_md5 varchar(64)  NOT NULL,
+    status       status       NOT NULL DEFAULT 'A',
+    date_begin   date         NOT NULL DEFAULT CURRENT_DATE CHECK ( "user".date_begin <= CURRENT_DATE + INTERVAL '3 months')
+);
+
+INSERT INTO "user" (lastname, firstname, middlename, phone, addr_home, zip, pickup, sex, birtday, "role", password_md5,
+                    status, date_begin)
+VALUES ('Johnson', 'Robert', 'Michael', '(123) 456-7890', '123 Main St', '12345', 'Ford F150', 'M', '1990-05-15', 'DRV',
+        '8f14e45fceea167a5a36dedd4bea2543', 'A', '2021-01-01'),
+       ('Williams', 'Mary', 'Elizabeth', '(111) 222-3333', '456 Oak Ave', '67890', 'Ford F150', 'F', '1985-08-20',
+        'DRV', '5f4dcc3b5aa765d61d8327deb882cf99', 'A', '2021-02-15'),
+       ('Brown', 'James', '', '(555) 123-4567', '789 Pine St', '54321', '', 'M', '1995-03-10', 'DSP',
+        '098f6bcd4621d373cade4e832627b4f6', 'A', '2021-03-23'),
+       ('Davis', 'Jennifer', 'Ann', '(999) 888-7777', '987 Maple Ave', '13579', 'Ford F-350', 'F', '1992-11-28', 'DRV',
+        'e10adc3949ba59abbe56e057f20f883e', 'A', '2021-04-05'),
+       ('Miller', 'Daniel', 'Joseph', '(777) 666-5555', '654 Elm St', '24680', '', 'M', '1998-07-12', 'DSP',
+        'fcea920f7412b5da7be0cf42b8c93759', 'A', '2021-05-17'),
+       ('Wilson', 'Karen', '', '(444) 555-6666', '321 Oak Ave', '97531', 'Ford F-150', 'F', '1989-09-03', 'DRV',
+        '1c8f0c1c163e45e5c6aa5b00ad175928', 'A', '2021-06-30'),
+       ('Taylor', 'Christopher', 'Lee', '(222) 333-4444', '789 Pine St', '12345', '', 'M', '1987-02-18',
+        'DSP', 'c4ca4238a0b923820dcc509a6f75849b', 'A', '2021-08-10'),
+       ('Thomas', 'Jessica', 'Nicole', '(111) 222-3333', '456 Oak Ave', '67890', 'Ford F-150', 'F', '1994-12-07', 'DRV',
+        '098f6bcd4621d373cade4e832627b4f6', 'A', '2021-09-21'),
+       ('Robinson', 'Andrew', '', '(555) 444-3333', '987 Maple Ave', '54321', '', 'M', '1993-06-25', 'DSP',
+        'e10adc3949ba59abbe56e057f20f883e', 'A', '2021-10-05'),
+       ('Clark', 'Sarah', 'Emily', '(999) 888-7777', '321 Oak St', '13579', 'Ford F-450', 'F', '1991-04-16', 'DRV',
+        '1c8f0c1c163e45e5c6aa5b00ad175928', 'A', '2021-11-15'),
+       ('Jackson', 'Matthew', 'John', '(777) 666-5555', '789 Pine St', '97531', '', 'M', '1997-01-09', 'DSP',
+        'fcea920f7412b5da7be0cf42b8c93759', 'A', '2021-12-25'),
+       ('Harris', 'Lauren', 'Grace', '(444) 555-6666', '654 Elm St', '12345', 'Ford F-450', 'F', '1988-03-14', 'DRV',
+        'c4ca4238a0b923820dcc509a6f75849b', 'A', '2022-02-03'),
+       ('Young', 'Jonathan', '', '(222) 333-4444', '987 Maple Ave', '67890', 'Ford F-550', 'M', '1996-10-27', 'DRV',
+        '5f4dcc3b5aa765d61d8327deb882cf99', 'A', '2022-03-15'),
+       ('Lee', 'Anna', 'Marie', '(111) 222-3333', '321 Oak Ave', '54321', '', 'F', '1999-09-02', 'DSP',
+        '8f14e45fceea167a5a36dedd4bea2543', 'A', '2022-04-27'),
+       ('Lewis', 'Nicholas', 'Alexander', '(555) 444-3333', '789 Pine St', '13579', 'Ford F-250', 'M', '1990-07-24',
+        'DRV', '1c8f0c1c163e45e5c6aa5b00ad175928', 'A', '2022-06-09'),
+       ('Walker', 'Grace', 'Olivia', '(999) 888-7777', '654 Elm St', '97531', 'Ford F-350', 'F', '1995-05-11', 'DRV',
+        'fcea920f7412b5da7be0cf42b8c93759', 'A', '2022-07-21'),
+       ('Hall', 'Daniel', '', '(777) 666-5555', '987 Maple Ave', '12345', '', 'M', '1986-08-17', 'DSP',
+        'c4ca4238a0b923820dcc509a6f75849b', 'A', '2022-09-02'),
+       ('Young', 'Emily', 'Sophia', '(444) 555-6666', '321 Oak St', '67890', 'Ford F-350', 'F', '1992-11-07', 'DRV',
+        '8f14e45fceea167a5a36dedd4bea2543', 'A', '2022-10-14'),
+       ('Lopez', 'Benjamin', 'Jacob', '(222) 333-4444', '654 Elm St', '54321', '', 'M', '1991-01-01', 'DSP',
+        '098f6bcd4621d373cade4e832627b4f6', 'A', '2022-11-26'),
+       ('Gonzalez', 'Zoe', '', '(111) 222-3333', '789 Pine St', '97531', 'Ford F-150', 'F', '1998-04-03', 'DRV',
+        '5f4dcc3b5aa765d61d8327deb882cf99', 'A', '2023-01-07'),
+       ('Wilson', 'Ethan', 'Daniel', '(555) 444-3333', '987 Maple Ave', '13579', '', 'M', '1997-03-23', 'DSP',
+        'c4ca4238a0b923820dcc509a6f75849b', 'A', '2023-02-19'),
+       ('Young', 'Grace', 'Elizabeth', '(999) 888-7777', '321 Oak St', '12345', 'Ford F-250', 'F', '1994-06-15', 'DRV',
+        'fcea920f7412b5da7be0cf42b8c93759', 'A', '2023-04-03'),
+       ('Smith', 'John', 'Michael', '(111) 222-3333', '123 Elm St', '12345', '', 'M', '1990-01-15', 'BSS',
+        '5f4dcc3b5aa765d61d8327deb882cf99', 'A', '2022-01-01')
+;
+
+
+CREATE TABLE "order"
+(
+    order_id       SERIAL       NOT NULL PRIMARY KEY,
+    "from"         varchar(200) NOT NULL,
+    from_zip       char(5)      NOT NULL CHECK (from_zip ~ '^[0-9]{5}$|^[0-9]{5}-[0-9]{4}$'),
+    "to"           varchar(200) NOT NULL,
+    to_zip         char(5)      NOT NULL CHECK (to_zip ~ '^[0-9]{5}$|^[0-9]{5}-[0-9]{4}$'),
+    sender_id      int          NOT NULL,
+    reciever_id    int          NOT NULL,
+    comment        varchar(4000),
+    driver_id      int,
+    dispatcher_id  int          NOT NULL,
+    status         status_order NOT NULL DEFAULT 'N',
+    date_added     timestamp    NOT NULL DEFAULT current_timestamp,
+    date_preferred date CHECK ( "order".date_preferred >= "order".date_added ),
+    date_pickup    date CHECK ( "order".date_pickup >= "order".date_added ),
+    date_delivery  date CHECK ( "order".date_delivery >= "order".date_pickup),
+    CONSTRAINT fk_order_driver FOREIGN KEY (driver_id) REFERENCES "user" (user_id),
+    CONSTRAINT fk_order_dispatcher FOREIGN KEY (dispatcher_id) REFERENCES "user" (user_id),
+    CONSTRAINT fk_order_sender FOREIGN KEY (sender_id) REFERENCES client (client_id),
+    CONSTRAINT fk_order_receiver FOREIGN KEY (reciever_id) REFERENCES client (client_id)
+);
+
+INSERT INTO "order" ("from", from_zip, "to", to_zip, sender_id, reciever_id, comment, driver_id, dispatcher_id, status,
+                     date_preferred, date_pickup, date_delivery)
+VALUES ('New York','10001', 'Los Angeles', '90001', 1, 2, 'ASAP', NULL, 7, 'N', '2023-07-30', NULL, NULL),
+       ('Chickago','60601', 'Houston', '77001', 3, 4, 'handle with care', 1, 14, 'A', '2023-07-08', NULL, NULL),
+       ('Miami','33101', 'Atlanta', '30301', 2, 6, 'ASAP', 10, 5, 'D', '2023-08-02', '2023-08-05', '2023-08-09'),
+       ('Boston','02101', 'Dallas', '75201', 9, 10, 'ASAP', 13, 9, 'C', '2023-08-04', NULL, NULL),
+       ('Philadelphia','19101', 'Phoenix', '85001', 11, 12, 'handle with care', NULL, 3, 'N', '2023-08-05', NULL,NULL),
+       ('Denver','80201', 'Las Vegas', '89101', 13, 14, 'ASAP', 4, 3, 'A', '2023-08-06', NULL, NULL),
+       ('San Diego','92101', 'Portland', '97201', 15, 16, 'handle with care', 4, 3, 'P', '2023-08-07', '2023-08-10',NULL),
+       ('Atlanta','30301', 'Chicago', '60601', 19, 20, 'handle with care', 15, 5, 'C', '2023-08-09', NULL, NULL),
+       ('San Francisco','94101', 'Miami', '33101', 20, 20, 'ASAP', 16, 11, 'N', '2023-08-10', NULL, NULL),
+       ('Dallas','75201', 'Seattle', '98101', 15, 14, 'handle with care', 16, 11, 'P', '2023-08-11', '2023-08-14',NULL),
+       ('Los Angeles','90001', 'Boston', '02101', 14, 14, 'ASAP', 8, 7, 'P', '2023-08-12', '2023-08-14', NULL),
+
+       ('Chicago','60601', 'New York', '10001', 2, 3, 'ASAP', 8, 21, 'D', '2023-08-14', '2023-08-14', '2023-08-18');
+
+INSERT INTO "order" ("from", from_zip, "to", to_zip, sender_id, reciever_id, comment, driver_id, dispatcher_id, status,
+                     date_added, date_preferred, date_pickup, date_delivery)
+VALUES ('Seattle', '98101', 'San Francisco', '94101', 17, 17, 'handle with care', 13, 9, 'D',
+        '2023-04-26 10:08:39.087000', '2023-05-03', '2023-05-06', '2023-05-08'),
+       ('Portland','97201', 'Houston', '77001', 3, 2, 'handle with care', 8, 21, 'D','2023-06-12', '2023-06-13', '2023-06-14','2023-06-17'),
+       ('Houston', '77001', 'New York', '10001', 17, 18, 'ASAP', 15, 5, 'D', '2023-04-26 10:08:39.087535', '2023-05-08',
+        '2023-05-10', '2023-05-12'),
+       ('123 Main St, New York, NY', '10001', '456 Elm St, Los Angeles, CA', '90001', 3, 4, 'ASAP', 2, 3, 'A',
+        '2023-06-10 00:00:0.000000', '2023-07-12', null, null),
+       ('789 Oak Ave, New York, NY', '10001', '456 Elm St, Los Angeles, CA', '90001', 3, 5, 'Handle with care', 2, 7,
+        'A', '2023-06-10 00:00:0.000000', '2023-07-12', null, null),
+       ('Sorento', '96601', 'San Alpino', '99101', 17, 17, 'handle with care', 13, 9, 'D','2023-03-26 10:08:39.087000', '2023-04-03', '2023-04-06', '2023-04-08')
+    ;
+
+
+CREATE TABLE tariff
+(
+    tariff_id      SERIAL      NOT NULL PRIMARY KEY,
+    tariff_name    varchar(50) NOT NULL,
+    price_base     real        NOT NULL CHECK ( price_base > 0 ),
+    price_per_mile real        NOT NULL CHECK ( price_base > 0 ),
+    status         status      NOT NULL DEFAULT 'A'
+);
+
+INSERT INTO tariff(tariff_name, price_base, price_per_mile)
+VALUES ('2-seat car', '200', '1.9'),
+       ('moto', '100', '0.9'),
+       ('4-seated car', '300', '2.0')
+;
+
+CREATE TABLE goods
+(
+    goods_id       SERIAL       NOT NULL PRIMARY KEY,
+    order_id       int          NOT NULL,
+    tariff_id      int          NOT NULL,
+    brand          varchar(100) NOT NULL,
+    model          varchar(100) NOT NULL,
+    "year"         int          NOT NULL CHECK ( "year" <= CAST(EXTRACT(YEAR FROM CURRENT_DATE) AS integer) + 1),
+    vin            VARCHAR(17)  NOT NULL CHECK (vin ~ '^[A-HJ-NPR-Z0-9]{17}$' OR vin = ''),
+    weight         int          NOT NULL CHECK ( weight > 0 ),
+    declared_price real         NOT NULL CHECK ( declared_price >= 0 ),
+    CONSTRAINT fk_goods_order FOREIGN KEY (order_id) REFERENCES "order" (order_id),
+    CONSTRAINT fk_goods_tariff FOREIGN KEY (tariff_id) REFERENCES "tariff" (tariff_id)
+);
+
+INSERT INTO goods (order_id, tariff_id, brand, model, "year", vin, weight, declared_price)
+VALUES (1, 1, 'Subaru', 'Impreza', 2013, 'JF1GPAD60D1803590', 3010, 24396.70),
+       (1, 3, 'Acura', 'Integra', 1991, 'JH4DA9350MS000938', 2606, 21238.35),
+       (2, 2, 'Toyota', 'Camry', 2018, '4T1B11HK8JU035733', 3100, 27500.00),
+       (3, 3, 'Ford', 'Mustang', 2020, '1FA6P8TH8L5123456', 3600, 32000.00),
+       (4, 1, 'Honda', 'Civic', 2015, '19XFB2F56FE012345', 2800, 23000.00),
+       (5, 2, 'Nissan', 'Altima', 2019, '1N4AL3AP5FC012345', 3000, 25000.00),
+       (5, 3, 'Chevrolet', 'Malibu', 2017, '1G1ZE5ST4HF012345', 2900, 24000.00),
+       (6, 1, 'Mazda', 'CX-5', 2016, 'JM3KE4CY1G0123456', 3300, 29000.00),
+       (7, 2, 'Kia', 'Optima', 2020, '5XXGT4L30LG012345', 3200, 28000.00),
+       (8, 3, 'Hyundai', 'Elantra', 2018, 'KMHD84LF2JU012345', 2700, 22000.00),
+       (9, 1, 'Volkswagen', 'Jetta', 2017, '3VW267AJ7HM012345', 3100, 26000.00),
+       (10, 2, 'BMW', '3 Series', 2019, 'WBA8E5G56K5D01234', 3500, 31000.00),
+       (11, 3, 'Mercedes-Benz', 'C-Class', 2020, 'WDDWF8EB7LR012345', 3800, 34000.00),
+       (11, 1, 'Audi', 'A4', 2018, 'WAUDNAF4XJN012345', 2900, 24000.00),
+       (12, 2, 'Lexus', 'RX', 2017, '2T2BGMCA2HC012345', 3300, 29000.00),
+       (14, 3, 'Tesla', 'Model S', 2021, '5YJSA1E2XMF012345', 3600, 37000.00),
+       (18, 1, 'Volks', 'Jet', 2023, '3VW267AJ7HM012345', 3200, 33000.00);
+
+
+
+--Отримати кількість не виконаних перевезень, за які відповідальними є три певні диспетчери.
+SELECT COUNT(*) AS count_of_incomplete_orders
+FROM "order"
+WHERE status != 'D'
+  AND dispatcher_id IN (7, 19, 9);
+
+--Отримати мінімальну вартість перевезень, виконаних у минулому місяці.
+SELECT MIN(g.declared_price) AS min_price
+FROM "order" o
+         JOIN goods g ON o.order_id = g.order_id
+WHERE date_delivery >= DATE_TRUNC('month', CURRENT_DATE - INTERVAL '1 month')
+  AND date_delivery < DATE_TRUNC('month', CURRENT_DATE);
+
+--Отримати повну інформацію про всі перевезення, відправником та отримувачем яких є одна й та сама особа.
+-- SELECT *
+-- FROM "order"
+-- WHERE sender_id = reciever_id;
+
+SELECT
+  o.order_id,
+  o."from",
+  o.from_zip,
+  o."to",
+  o.to_zip,
+  u1.firstname || ' ' || u1.lastname AS sender_name,
+  u2.firstname || ' ' || u2.lastname AS receiver_name,
+  u3.firstname || ' ' || u3.lastname AS driver_name,
+  u4.firstname || ' ' || u4.lastname AS dispatcher_name,
+  o.comment,
+  o.status,
+  o.date_added,
+  o.date_preferred
+FROM
+  "order" o
+INNER JOIN
+  client u1 ON o.sender_id = u1.client_id
+INNER JOIN
+  client u2 ON o.reciever_id = u2.client_id
+LEFT JOIN
+  "user" u3 ON o.driver_id = u3.user_id
+LEFT JOIN
+  "user" u4 ON o.dispatcher_id = u4.user_id
+WHERE
+  o.sender_id = o.reciever_id;
+
+
+
+
+--Отримати інформацію про замовлення, які надійшли на поточному тижні, і кінцевою або відправною точкою є певний населений пункт. Результат відсортувати у зворотному хронологічному порядку.
+-- SELECT *
+-- FROM "order"
+-- WHERE ("from_zip" = '97201' OR "to_zip" = '97201')
+--   AND date_added >= DATE_TRUNC('week', CURRENT_DATE)
+--   AND date_added < DATE_TRUNC('week', CURRENT_DATE + INTERVAL '1 week')
+-- ORDER BY date_added DESC;
+
+SELECT o.order_id,
+       o."from",
+       o.from_zip,
+       o."to",
+       o.to_zip,
+       u_sender.firstname || ' ' || u_sender.lastname AS sender_name,
+       u_reciever.firstname || ' ' || u_reciever.lastname AS reciever_name,
+       o.comment,
+       u_driver.firstname || ' ' || u_driver.lastname AS driver_name,
+       u_dispatcher.firstname || ' ' || u_dispatcher.lastname AS dispatcher_name,
+       o.status,
+       o.date_added
+FROM "order" o
+INNER JOIN "user" u_sender ON o.sender_id = u_sender.user_id
+INNER JOIN "user" u_reciever ON o.reciever_id = u_reciever.user_id
+LEFT JOIN "user" u_driver ON o.driver_id = u_driver.user_id
+LEFT JOIN "user" u_dispatcher ON o.dispatcher_id = u_dispatcher.user_id
+WHERE ("from_zip" = '97201' OR "to_zip" = '97201')
+  AND date_added >= DATE_TRUNC('week', CURRENT_DATE)
+  AND date_added < DATE_TRUNC('week', CURRENT_DATE + INTERVAL '1 week')
+ORDER BY date_added DESC;
+
+
+--Отримати інформацію про перевезення, виконані певним водієм навесні поточного року, у яких перевозився лише один транспортний засіб. Результат відсортувати у хронологічному порядку.
+-- SELECT *
+-- FROM "order" o
+--          JOIN goods g ON o.order_id = g.order_id
+-- WHERE o.driver_id = '13'
+--   AND EXTRACT(MONTH FROM o.date_delivery) IN (3, 4, 5)
+--   AND EXTRACT(YEAR FROM o.date_delivery) = EXTRACT(YEAR FROM CURRENT_DATE)
+-- GROUP BY o.order_id, o.date_delivery, goods_id
+-- HAVING COUNT(g.goods_id) = 1
+-- ORDER BY o.date_delivery DESC ;
+
+SELECT o.order_id,
+       o."from",
+       o.from_zip,
+       o."to",
+       o.to_zip,
+       u1.lastname || ' ' || u1.firstname AS sender_name,
+       u2.lastname || ' ' || u2.firstname AS reciever_name,
+       o.comment,
+       u3.lastname || ' ' || u3.firstname AS driver_name,
+       u4.lastname || ' ' || u4.firstname AS dispatcher_name,
+       o.status,
+       o.date_added,
+       o.date_pickup,
+       o.date_delivery,
+       g.brand,
+       g.model,
+       g."year",
+       g.vin,
+       g.weight,
+       g.declared_price
+FROM "order" o
+JOIN goods g ON o.order_id = g.order_id
+JOIN "user" u1 ON o.sender_id = u1.user_id
+JOIN "user" u2 ON o.reciever_id = u2.user_id
+JOIN "user" u3 ON o.driver_id = u3.user_id
+JOIN "user" u4 ON o.dispatcher_id = u4.user_id
+WHERE o.driver_id = '13'
+  AND EXTRACT(MONTH FROM o.date_delivery) IN (3, 4, 5)
+  AND EXTRACT(YEAR FROM o.date_delivery) = EXTRACT(YEAR FROM CURRENT_DATE)
+GROUP BY o.order_id, o."from", o.from_zip, o."to", o.to_zip, sender_name, reciever_name, o.comment, driver_name, dispatcher_name, o.status, o.date_added, o.date_delivery, g.brand, g.model, g."year", g.vin, g.weight, g.declared_price
+HAVING COUNT(g.goods_id) = 1
+ORDER BY o.date_delivery DESC;
+
+
+--Отримати рейтинг клієнтів за кількістю виконаних перевезень.
+SELECT c.client_id, c.lastname, c.firstname, COUNT(*) AS order_count
+FROM client c
+         JOIN "order" o ON c.client_id = o.sender_id
+WHERE o.status = 'D'
+GROUP BY c.client_id, c.lastname, c.firstname
+ORDER BY order_count DESC;
+
+--Отримати інформацію про перевезення, що плануються на наступному тижні, які має здійснити певний водій з певного населеного пункту.
+-- SELECT *
+-- FROM "order"
+-- WHERE driver_id = '2'
+--   AND "from_zip" = '10001'
+--   AND date_preferred >= DATE_TRUNC('week', CURRENT_DATE + INTERVAL '1 week')
+--   AND date_preferred < DATE_TRUNC('week', CURRENT_DATE + INTERVAL '2 weeks');
+
+SELECT o.order_id,
+       o."from",
+       o.from_zip,
+       o."to",
+       o.to_zip,
+       u1.lastname || ' ' || u1.firstname AS sender_name,
+       u2.lastname || ' ' || u2.firstname AS reciever_name,
+       o.comment,
+       u3.lastname || ' ' || u3.firstname AS driver_name,
+       u4.lastname || ' ' || u4.firstname AS dispatcher_name,
+       o.status,
+       o.date_added,
+       o.date_preferred
+FROM "order" o
+JOIN "user" u1 ON o.sender_id = u1.user_id
+JOIN "user" u2 ON o.reciever_id = u2.user_id
+JOIN "user" u3 ON o.driver_id = u3.user_id
+JOIN "user" u4 ON o.dispatcher_id = u4.user_id
+WHERE o.driver_id = '2'
+  AND o.from_zip = '10001'
+  AND o.date_preferred >= DATE_TRUNC('week', CURRENT_DATE + INTERVAL '1 week')
+  AND o.date_preferred < DATE_TRUNC('week', CURRENT_DATE + INTERVAL '2 weeks');
+
+--Отримати дані про перевезення, які почали виконуватись як мінімум через три дні після надходження замовлення.
+-- SELECT *
+-- FROM "order"
+-- WHERE date_pickup >= date_added + INTERVAL '3 days';
+
+SELECT o.order_id,
+       o."from",
+       o.from_zip,
+       o."to",
+       o.to_zip,
+       u_sender.lastname || ' ' || u_sender.firstname AS sender_name,
+       u_receiver.lastname || ' ' || u_receiver.firstname AS receiver_name,
+       o.comment,
+       u_driver.lastname || ' ' || u_driver.firstname AS driver_name,
+       u_dispatcher.lastname || ' ' || u_dispatcher.firstname AS dispatcher_name,
+       o.status,
+       o.date_added,
+       o.date_preferred,
+       g.brand,
+       g.model,
+       g."year",
+       g.vin,
+       g.weight,
+       g.declared_price
+FROM "order" o
+LEFT JOIN "user" u_sender ON o.sender_id = u_sender.user_id
+LEFT JOIN "user" u_receiver ON o.reciever_id = u_receiver.user_id
+LEFT JOIN "user" u_driver ON o.driver_id = u_driver.user_id
+LEFT JOIN "user" u_dispatcher ON o.dispatcher_id = u_dispatcher.user_id
+JOIN goods g ON o.order_id = g.order_id
+WHERE o.date_pickup >= o.date_added + INTERVAL '3 days';
+
+
+
+--Отримати інформацію про кількість перевезень, що виконуються в даний момент.
+SELECT COUNT(*) AS count_of_ongoing_orders
+FROM "order"
+WHERE status not in ('D','C','N');
+
+--Отримати максимальну вартість перевезень, які наразі прямують у певний населений пункт.
+SELECT MAX(g.declared_price) AS max_price
+FROM "order" o
+         JOIN goods g ON o.order_id = g.order_id
+WHERE "to_zip" = '97201'
+  AND o.status = 'P';
+
+
+
+/*SELECT "user".user_id, "user".lastname, "user".firstname, COUNT("order".driver_id) AS total_orders
+FROM "user"
+         LEFT JOIN "order" ON "user".user_id = "order".driver_id
+WHERE "user"."role" = 'DRV'
+  AND "order".date_preferred >= '2023-01-01'
+  AND "order".date_preferred <= '2023-12-31'
+GROUP BY "user".user_id, "user".lastname, "user".firstname
+ORDER BY total_orders DESC;
+
+SELECT order_id, array_agg(goods_id) AS goods_ids
+FROM goods
+GROUP BY order_id;
+
+SELECT order_id, string_agg(goods_id::text, ',') AS goods_ids
+FROM goods
+GROUP BY order_id;
+
+SELECT o.order_id
+FROM "order" o
+WHERE EXISTS (SELECT 1
+              FROM goods g
+              WHERE g.order_id = o.order_id);
+*/
